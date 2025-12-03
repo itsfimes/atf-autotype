@@ -15,6 +15,7 @@ os.makedirs("screenshots", exist_ok=True)
 
 
 monitor_id = 1
+typing_speed: float | int = 12  # This is the approximate delay between each keystroke. The actual typing speed is calculated using 1 divided by typing_speed 
 
 char_blocklist = ["1","2","3","4","5","6","7","8","9", "_", "-",
                   "=", "|", "/", r"\\", "[", "]", "{", "}", "(", ")",
@@ -104,6 +105,6 @@ if __name__ == "__main__":
         extracted_text = correct_text(extract_text(region, ocr, blocklist=char_blocklist))
         print(extracted_text)
 
-        type_text(extracted_text.strip(), 180 + random.randint(-2, 1), random.getrandbits(1) if len(extracted_text) > 150 else 0)
+        type_text(extracted_text.strip(), typing_speed + random.randint(-2, 1), random.getrandbits(1) if len(extracted_text) > 150 else 0)
         next_slide(top, left - random.randint(-3, 5), width - random.randint(-40, 30), height - 100 - random.randint(-50, 30), monitor_id)
         time.sleep(0.2)
