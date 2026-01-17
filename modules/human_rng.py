@@ -11,3 +11,10 @@ def typing_jitter(delay: float, char_index: int) -> float:
     base_num += (char_index / 100) ** 1 / random.randint(2, 50)
 
     return base_num if base_num > 0 else base_num * -1
+
+def generate_base_offset(text: str) -> float:
+    unqiue_chars_count: int = len(set(text))
+    if unqiue_chars_count > (len(text) / 3):
+        return random.uniform(-2, 0)
+    else:
+        return random.uniform(0, 1)

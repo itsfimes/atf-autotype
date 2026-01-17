@@ -4,8 +4,8 @@ from pynput.keyboard import Controller, Key
 from modules.screenshots import take_and_save_screenshot
 from modules.human_rng import typing_jitter
 
-
 keyboard = Controller()
+
 
 def type_text(text, cps=10, make_one_error=False):
     delay = 1.0 / cps
@@ -15,11 +15,11 @@ def type_text(text, cps=10, make_one_error=False):
         mistake_index = random.randint(1, len(text) - 2)
 
     for i, ch in enumerate(text):
-        # introduce the one mistake if this is the chosen spot
+        # mistake logic
         if make_one_error and i == mistake_index:
             wrong = random.choice("abcdefghijklmnopqrstuvwxyz")
             if wrong == ch:
-                wrong = chr((ord(ch) + 3) % 122)  # guaranteed different
+                wrong = chr((ord(ch) + 3) % 122)
             keyboard.type(wrong)
             time.sleep(delay)
 
@@ -33,7 +33,7 @@ def type_text(text, cps=10, make_one_error=False):
         keyboard.press(ch)
         time.sleep(random.uniform(0.002, 0.007))
         keyboard.release(ch)
-        time.sleep(delay + typing_jitter(delay, i))  # tiny human jitter
+        time.sleep(delay + typing_jitter(delay, i))  # tiny jitter so it seems legit
 
 def _next_slide() -> None:
     keyboard.press(Key.enter)
@@ -50,6 +50,9 @@ def next_slide(top: int, left:int, width:int, height:int, monitor_num:int = 1) -
     _next_slide()
     time.sleep(0.1)
 
+    switch_keyboard_layouts()
+
+def switch_keyboard_layouts() -> None:
     keyboard.press(Key.cmd)
     keyboard.tap(Key.space)
     keyboard.release(Key.cmd)

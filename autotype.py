@@ -3,19 +3,25 @@ import cv2
 import numpy as np
 import mss
 import easyocr
-import pytesseract
-from modules.typer import type_text, next_slide
+from modules.typer import type_text, next_slide, switch_keyboard_layouts
 from modules.corrector import correct_text
+from modules.human_rng import generate_base_offset
 import time
 import os
 
-
-ocr = easyocr.Reader(["cs", "en"])
+ocr = easyocr.Reader(["cs"])
 os.makedirs("screenshots", exist_ok=True)
 
+# ----- CONFIG -----
 
-monitor_id = 1
-typing_speed: float | int = 12  # This is the approximate delay between each keystroke. The actual typing speed is calculated using 1 divided by typing_speed 
+monitor_id = 2
+
+typing_speed: float | int = 260  # keystrokes per minute(approx)
+typing_speed = typing_speed / 60 # convert to "per minute" - don't edit
+
+switch_kb_layout_on_start: bool = True  # Whether to switch keyboards layout before typing. Avoids you having to press win + space before starting.
+
+# ----- CONFIG -----
 
 char_blocklist = ["1","2","3","4","5","6","7","8","9", "_", "-",
                   "=", "|", "/", r"\\", "[", "]", "{", "}", "(", ")",
@@ -99,12 +105,16 @@ if __name__ == "__main__":
     region = img[top:bottom, left:right]
 
     time.sleep(5)
+
+    if switch_kb_layout_on_start:
+        switch_keyboard_layouts()
+
     while True:
         img = capture_screen(monitor_id)
         region = img[top:bottom, left:right]
         extracted_text = correct_text(extract_text(region, ocr, blocklist=char_blocklist))
         print(extracted_text)
 
-        type_text(extracted_text.strip(), typing_speed + random.randint(-2, 1), random.getrandbits(1) if len(extracted_text) > 150 else 0)
+        type_text(extracted_text.strip(), typing_speed + generate_base_offset(extracted_text), random.getrandbits(1) if len(extracted_text) > 150 else 0)
         next_slide(top, left - random.randint(-3, 5), width - random.randint(-40, 30), height - 100 - random.randint(-50, 30), monitor_id)
         time.sleep(0.2)
