@@ -6,3 +6,30 @@ __pycache__/
 /.venv
 /.winvenv
 /.idea
+.env
+.env.local
+.venv/
+.venv/**
+
+# Ignore extracted files and temporary outputs
+ac_source.txt
+ac_source_utf8.txt
+extracted_strings.txt
+extracted_strings_utf8.txt
+text.txd
+
+# Ignore test files
+test.py
+test_config.py
+
+# Ignore documentation files
+CHANGES.md
+IMPLEMENTATION_SUMMARY.md
+
+# Ignore font files
+fonts/
+
+# Ignore unused OCR modules
+modules/ai_recognition.py
+modules/recognition.py
+

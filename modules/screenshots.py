@@ -1,27 +1,27 @@
-import mss
-import mss.tools
+import pyscreenshot as ImageGrab
+import screeninfo
 import os
 
-def take_and_save_screenshot(top: int, left:int, width:int, height:int, monitor_num:int = 1) -> None:
-    with mss.mss() as sct:
-        mon = sct.monitors[monitor_num]
+def take_and_save_screenshot(top: int, left: int, width: int, height: int, monitor_num: int = 1) -> None:
+    os.makedirs("screenshots", exist_ok=True)
 
-        # The screen part to capture
-        monitor = {
-            "top": mon["top"] + top,  # 100px from the top
-            "left": mon["left"] + left,  # 100px from the left
-            "width": width,
-            "height": height,
-            "mon": monitor_num,
-        }
-        output = "screenshots/Screenshot-ATF-{width}x{height}.png".format(**monitor)
+    # Get monitor offset (screeninfo uses 0-based index)
+    monitors = screeninfo.get_monitors()
+    if monitor_num < 1 or monitor_num > len(monitors):
+        raise ValueError(f"Invalid monitor_num {monitor_num}. Available monitors: 1–{len(monitors)}")
 
-        while os.path.exists(output):
-            output = f"{output}_"
+    mon = monitors[monitor_num - 1]  # Convert 1-based to 0-based index
 
-        # Grab the data
-        sct_img = sct.grab(monitor)
+    # Apply monitor offset to coordinates (like mss did with mon["top"] / mon["left"])
+    abs_left = mon.x + left
+    abs_top = mon.y + top
 
-        # Save to the picture file
-        mss.tools.to_png(sct_img.rgb, sct_img.size, output=output)
-        print(output)
+    bbox = (abs_left, abs_top, abs_left + width, abs_top + height)
+
+    output = f"screenshots/Screenshot-ATF-{width}x{height}.png"
+    while os.path.exists(output):
+        output = f"{output}_"
+
+    img = ImageGrab.grab(bbox=bbox)
+    img.save(output)
+    print(output)
